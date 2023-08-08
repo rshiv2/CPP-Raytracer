@@ -1,15 +1,11 @@
 #include <iostream>
 #include <utility>
 #include <random>
+#include <functional>
 
-#include "hittable.h"
-#include "hittable_list.h"
-#include "bvh.h"
-#include "sphere.h"
-#include "triangle_mesh.h"
-#include "rtweekend.h"
-#include "triangle.h"
-#include "triangle_mesh.h"
+#include "../src/rtcore.h"
+
+/* ------------- Test cases ------------- */
 
 bool test_simple_triangle_mesh() {
     
@@ -261,7 +257,93 @@ bool test_bvh() {
     return true;
 }
 
-int main() {
+/* ---------------- Command Line Parsing --------------- */
+
+struct Test {
+
+    Test(const char * name, std::function<bool(void)> func) : test_name(name), test_function(func), passed(false) {};
+
+    void run() {
+        if ((this->passed = this->test_function())) {
+            std::cout << test_name << " passed" << std::endl;
+        } else {
+            std::cout << test_name << " failed" << std::endl;
+        }
+    }
+
+    std::string test_name;
+    std::function<bool(void)> test_function;
+    bool passed;
+};
+
+void print_usage() {
+    std::cout << "Usage: \n"
+              << "./out [test_name1 test_name2 ...] [-h]\n"
+              << std::endl;
+
+    std::cout << "Valid test_name: all, triangle_intersection_simple, triangle_intersection_random\n" 
+              << " triangle_intersection_watertightness, simple_triangle_mesh, bvh\n" 
+              << std::endl;
+
+    std::cout << "-h --help       This message" << std::endl;
+}
+
+std::vector<Test> parse_args(int argc, char* argv[]) {
+
+    std::vector<Test> tests;
+    if (argc == 1) {
+        tests.push_back(Test("triangle_intersection_simple", test_triangle_intersection_simple));
+        tests.push_back(Test("triangle_intersection_random", test_triangle_intersection_random));
+        tests.push_back(Test("triangle_intersection_watertightness", test_triangle_intersection_watertightness));
+        tests.push_back(Test("simple_triangle_mesh", test_simple_triangle_mesh));
+        tests.push_back(Test("bvh", test_bvh));
+        return tests;
+    }
+
+    for (int i = 1; i < argc; i++) {
+        std::string cmd_line_str(argv[i]);
+
+        // determine type of command line option
+        if (cmd_line_str == "-h" || cmd_line_str == "--help") {
+            print_usage();
+            std::vector<Test> empty_vec;
+            return empty_vec;
+        }
+
+        // determine corresponding command line value
+        if (cmd_line_str == "triangle_intersection_simple") {
+            tests.push_back(Test("triangle_intersection_simple", test_triangle_intersection_simple));
+        } else if (cmd_line_str == "triangle_intersection_random") {
+            tests.push_back(Test("triangle_intersection_random", test_triangle_intersection_random));
+        } else if (cmd_line_str == "triangle_intersection_watertightness") {
+            tests.push_back(Test("triangle_intersection_watertightness", test_triangle_intersection_watertightness));
+        } else if (cmd_line_str == "simple_triangle_mesh") {
+            tests.push_back(Test("simple_triangle_mesh", test_simple_triangle_mesh));
+        } else if (cmd_line_str == "bvh") {
+            tests.push_back(Test("bvh", test_bvh));
+        } else {
+            std::cout << "Unknown argument: " << cmd_line_str << std::endl;
+            std::vector<Test> empty_vec;
+            return empty_vec;
+        }
+
+    }
+    return tests;
+}
+
+int main(int argc, char* argv[]) {
+
+    std::vector<Test> tests = parse_args(argc, argv);
+
+    int num_tests_passed = 0, num_tests_total = tests.size();
+    for (auto& test : tests) {
+        test.run();
+        num_tests_passed += test.passed;
+    }
+    
+    std::cout << "Tests Passed: " << num_tests_passed << "/" << num_tests_total << std::endl;
+
+    return EXIT_SUCCESS;
 
     bool passed = test_bvh();
 

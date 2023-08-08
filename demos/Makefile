@@ -1,12 +1,9 @@
 CC=g++
-CXX_FLAGS=-std=c++14 -ggdb
+CXX_FLAGS=-std=c++14 -O3
 TARGET=main
 
 all:
 	$(CC) main.cpp $(CXX_FLAGS) -o $(TARGET)
-
-test:
-	$(CC) test.cpp $(CXX_FLAGS) -o test
 
 build:
 	make clean && make && ./$(TARGET) >> image.ppm && open image.ppm

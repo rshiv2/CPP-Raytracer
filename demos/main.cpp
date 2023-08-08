@@ -2,17 +2,7 @@
 #include <thread>
 #include <utility>
 
-#include "rtweekend.h"
-#include "hittable_list.h"
-#include "color.h"
-#include "sphere.h"
-#include "moving_sphere.h"
-#include "camera.h"
-#include "material.h"
-#include "bvh.h"
-#include "triangle.h"
-#include "triangle_mesh.h"
-#include "obj_loader.h"
+#include "../src/rtcore.h"
 
 color ray_color(const ray& r, const hittable_list& world, int depth) 
 {
@@ -55,7 +45,7 @@ hittable_list random_scene() {
                     auto albedo = color::random() * color::random();
                     sphere_material = std::make_shared<lambertian>(albedo);
                     auto center2 = center + vec3(0, random_double(0,0.5), 0);
-                    world.add(std::make_shared<moving_sphere>(center, center2, radius, sphere_material, 0.0, 1.0));
+                    world.add(std::make_shared<sphere>(center, radius, sphere_material));
                 } else if (choose_mat < 0.95) {
                     // metal
                     auto albedo = color::random(0.5, 1);
@@ -86,11 +76,10 @@ hittable_list random_scene() {
 
 }
 
-
 hittable_list triangle_scene() {
     hittable_list world;
 
-    auto mesh = get_triangle_mesh_from_file("objs/tetrahedron.obj");
+    auto mesh = get_triangle_mesh_from_file("../objs/tetrahedron.obj");
     world.add(mesh);
     world.commit();
     return world;
@@ -129,8 +118,8 @@ int main()
     const int max_depth = 10;
 
     // camera
-    //point3 lookfrom(13,2,3);
-    point3 lookfrom(-0,3,-10);
+    point3 lookfrom(13,2,3);
+    // point3 lookfrom(-0,3,-10);
     point3 lookat(0,0,0);
     vec3 vup(0,1,0);
     auto aperture = 0.1;
@@ -139,7 +128,7 @@ int main()
     camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     // world
-    hittable_list world = triangle_scene();
+    hittable_list world = random_scene();
     
     // render
     std::cout << "P3" << std::endl;
