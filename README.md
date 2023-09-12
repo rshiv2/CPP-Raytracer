@@ -10,7 +10,7 @@ has all the compiler optimizations that make this library run fast, while the __
 symbols in case you want to inspect the API in a debugger. For all intents and purposes, the __Release__
 version should be fine. Link this library with your project, and #include `include/rtcore.h` in your main file.
 
-You can check out some examples in `./demo`. Just run `mkdir build && cd build && cmake .. && make` to run it.
+You can check out some examples in `./demo`. Just run `bash build.sh` to run it.
 
 ## Features
 
