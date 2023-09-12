@@ -2,7 +2,7 @@
 #include <thread>
 #include <utility>
 
-#include "../src/rtcore.h"
+#include "rtcore.h"
 
 color ray_color(const ray& r, const hittable_list& world, int depth) 
 {
@@ -73,15 +73,80 @@ hittable_list random_scene() {
     world.commit();
 
     return world;
-
 }
 
-hittable_list triangle_scene() {
+hittable_list sphere_scene() {
     hittable_list world;
 
-    auto mesh = get_triangle_mesh_from_file("../objs/tetrahedron.obj");
+    auto material1 = std::make_shared<dielectric>(1.5);
+    world.add(std::make_shared<sphere>(point3(0, 1, 0), 1.0, material1));
+
+    auto material2 = std::make_shared<lambertian>(color(0.4, 0.2, 0.1));
+    std::vector<std::shared_ptr<transform>> transforms2 = { std::make_shared<translation>(-4,0,0) };
+    world.add(std::make_shared<sphere>(point3(0, 1, 0), 1.0, material2, transforms2));
+
+    auto material3 = std::make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
+    std::vector<std::shared_ptr<transform>> transforms3 = { std::make_shared<translation>(4,0,0) };
+    world.add(std::make_shared<sphere>(point3(0, 1, 0), 1.0, material3, transforms3));
+
+    try {
+        if (!world.commit()) {
+            throw "Failed to commit hittable list";
+        }
+    } catch (std::string e) {
+        std::cout << e << std::endl;
+    }
+
+    return world;
+}
+
+hittable_list tetra_scene() {
+    hittable_list world;
+
+    color marble(0.949f, 0.941f, 0.902f);
+    color blue_marble(201, 217, 232);
+    blue_marble /= 255.0f;
+    auto mesh_material = std::make_shared<glossy>(blue_marble, blue_marble, 0.0, 1.0);
+    auto mesh = get_triangle_mesh_from_file("../../objs/tetrahedron.obj", mesh_material);
     world.add(mesh);
+
+    auto ground_material = std::make_shared<lambertian>(color(0.5, 0.25, 0.25));
+    world.add(std::make_shared<sphere>(point3(0,-1000.5,0), 1000, ground_material));
+
+    auto material1 = std::make_shared<glossy>(marble, marble, 0.5, 0.8);
+    auto center1 = mesh->centroid() + point3(-4,0,0);
+    world.add(std::make_shared<sphere>(center1, 1.0, material1));
+
+    auto material2 = std::make_shared<glossy>(marble, marble, 0.8, 0.8);
+    auto center2 = mesh->centroid() + point3(4,0,0);
+    world.add(std::make_shared<sphere>(center2, 1.0, material2));
     world.commit();
+    return world;
+}
+
+hittable_list teapot_scene() {
+    hittable_list world;
+
+    color marble(0.949f, 0.941f, 0.902f);
+    auto mesh_material = std::make_shared<glossy>(marble, marble, 0.5, 0.8);
+    auto lambertian_material = std::make_shared<lambertian>(color(0.0,1.0,0.0));
+    auto mesh = get_triangle_mesh_from_file("../../objs/teapot.obj", mesh_material);
+    mesh->set_material(lambertian_material);
+    world.add(mesh);
+
+    auto ground_material = std::make_shared<lambertian>(color(0.5, 0.25, 0.25));
+    world.add(std::make_shared<sphere>(point3(0,-1000.5,0), 1000, ground_material));
+
+    auto material1 = std::make_shared<glossy>(marble, marble, 0.5, 0.8);
+    auto center1 = mesh->centroid() + point3(-4,0,0);
+    world.add(std::make_shared<sphere>(center1, 1.0, material1));
+
+    auto material2 = std::make_shared<glossy>(marble, marble, 0.8, 0.8);
+    auto center2 = mesh->centroid() + point3(4,0,0);
+    world.add(std::make_shared<sphere>(center2, 1.0, material2));
+
+    world.commit();
+    aabb mesh_box = mesh->get_bounding_box();
     return world;
 }
 
@@ -114,21 +179,21 @@ int main()
     const auto aspect_ratio = 16.0 / 9.0;
     const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 30;
+    const int samples_per_pixel = 100;
     const int max_depth = 10;
 
     // camera
-    point3 lookfrom(13,2,3);
-    // point3 lookfrom(-0,3,-10);
-    point3 lookat(0,0,0);
+    // point3 lookfrom(10,7,8);
+    point3 lookfrom(-0,6,-20);
+    point3 lookat(0, 1.5, 0);
     vec3 vup(0,1,0);
     auto aperture = 0.1;
-    auto dist_to_focus = 10.0;
+    auto dist_to_focus = (lookfrom - lookat).length();
 
     camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     // world
-    hittable_list world = random_scene();
+    hittable_list world = teapot_scene();
     
     // render
     std::cout << "P3" << std::endl;
