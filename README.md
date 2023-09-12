@@ -8,7 +8,7 @@ To include this in other projects, first build this API by navigating to `lib`. 
 This set of commands will create two libraries, `libRtxRelease` and `libRtxDebug`. The __Release__ version
 has all the compiler optimizations that make this library run fast, while the __Debug__ version has debug
 symbols in case you want to inspect the API in a debugger. For all intents and purposes, the __Release__
-version should be fine.
+version should be fine. Link this library with your project, and #include `include/rtcore.h` in your main file.
 
 You can check out some examples in `./demo`. Just run `mkdir build && cd build && cmake .. && make` to run it.
 
@@ -22,10 +22,10 @@ You can check out some examples in `./demo`. Just run `mkdir build && cd build &
 
 ## TODOs
 
-- [] Implement Texture and Sampler classes.
-- [] Create Renderer class that accepts a scene, along with user parameters, and renders that scene. Currently, the task of  rendering a scene is left up to the user, though the `./demo` explains how to do it. Parameters should include the output texture dimensions, samples per pixel, maximum num of ray bounces, etc.
-- [] Ray-scattering should be iterative. Currently, it is implemented recursively, which is more intuitive but inefficient, since recursive functions require lots of allocation on the stack.
-- [] A lot of other stuff...
+- [ ] Implement Texture and Sampler classes.
+- [ ] Create Renderer class that accepts a scene, along with user parameters, and renders that scene. Currently, the task of  rendering a scene is left up to the user, though the `./demo` explains how to do it. Parameters should include the output texture dimensions, samples per pixel, maximum num of ray bounces, etc.
+- [ ] Ray-scattering should be iterative. Currently, it is implemented recursively, which is more intuitive but inefficient, since recursive functions require lots of allocation on the stack.
+- [ ] A lot of other stuff...
 
 ## References
 
