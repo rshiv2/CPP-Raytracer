@@ -8,7 +8,7 @@ To include this in other projects, first build this API by navigating to `lib`. 
 This set of commands will create two libraries, `libRtxRelease` and `libRtxDebug`. The __Release__ version
 has all the compiler optimizations that make this library run fast, while the __Debug__ version has debug
 symbols in case you want to inspect the API in a debugger. For all intents and purposes, the __Release__
-version should be fine.
+version should be fine. Link this library with your project, and #include `include/rtcore.h` in your main file.
 
 You can check out some examples in `./demo`. Just run `/bin/bash build.sh` to run it.
 
