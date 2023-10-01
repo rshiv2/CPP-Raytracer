@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "rtcore.h"
+#include "renderer.h"
 
 color ray_color(const ray& r, const hittable_list& world, int depth) 
 {
@@ -128,25 +129,31 @@ hittable_list teapot_scene() {
     hittable_list world;
 
     color marble(0.949f, 0.941f, 0.902f);
-    auto mesh_material = std::make_shared<glossy>(marble, marble, 0.5, 0.8);
     auto lambertian_material = std::make_shared<lambertian>(color(0.0,1.0,0.0));
-    auto mesh = get_triangle_mesh_from_file("../../objs/teapot.obj", mesh_material);
-    mesh->set_material(lambertian_material);
-    world.add(mesh);
+
+    for (int i = 0; i <= 4; i++) {
+        auto mesh = get_triangle_mesh_from_file("../../objs/teapot.obj");
+        auto material = std::make_shared<glossy>(marble, marble, 0.8, i / 4.0f);
+        mesh->set_material(material);
+        mesh->push_transform(std::make_shared<scale>(0.5f, 0.5f, 0.5f));
+        mesh->push_transform(std::make_shared<translation>(3.0f * (i-2), 0, 0));
+        world.add(mesh);
+    }
 
     auto ground_material = std::make_shared<lambertian>(color(0.5, 0.25, 0.25));
     world.add(std::make_shared<sphere>(point3(0,-1000.5,0), 1000, ground_material));
-
+    
+    /*
     auto material1 = std::make_shared<glossy>(marble, marble, 0.5, 0.8);
-    auto center1 = mesh->centroid() + point3(-4,0,0);
+    auto center1 = mesh_centroid + point3(-4,0,0);
     world.add(std::make_shared<sphere>(center1, 1.0, material1));
 
     auto material2 = std::make_shared<glossy>(marble, marble, 0.8, 0.8);
-    auto center2 = mesh->centroid() + point3(4,0,0);
+    auto center2 = mesh_centroid + point3(4,0,0);
     world.add(std::make_shared<sphere>(center2, 1.0, material2));
+    */
 
     world.commit();
-    aabb mesh_box = mesh->get_bounding_box();
     return world;
 }
 
@@ -183,9 +190,9 @@ int main()
     const int max_depth = 10;
 
     // camera
-    // point3 lookfrom(10,7,8);
-    point3 lookfrom(-0,6,-20);
-    point3 lookat(0, 1.5, 0);
+    //point3 lookfrom(10,7,8);
+    point3 lookfrom(0.0f, 4.5f, 30.0f);
+    point3 lookat(0.0f, 1.5f, 0.0f);
     vec3 vup(0,1,0);
     auto aperture = 0.1;
     auto dist_to_focus = (lookfrom - lookat).length();
@@ -194,7 +201,17 @@ int main()
 
     // world
     hittable_list world = teapot_scene();
-    
+
+    renderer r;
+    r.set_scene(world);
+    r.set_cam(cam);
+    r.samples_per_pixel(samples_per_pixel);
+    r.max_depth(max_depth);
+    r.image_dims(image_width, image_height);
+    r.num_threads(-1);  // choose for me
+
+    r.render_scene();
+    /*
     // render
     std::cout << "P3" << std::endl;
     std::cout << image_width << " " << image_height << std::endl;
@@ -226,5 +243,5 @@ int main()
             write_color(std::cout, frameBuffer[j][i], samples_per_pixel);
         }
     }
-    std::cerr << "\nDone.\n";
+    std::cerr << "\nDone.\n";*/
 }
