@@ -10,22 +10,23 @@ has all the compiler optimizations that make this library run fast, while the __
 symbols in case you want to inspect the API in a debugger. For all intents and purposes, the __Release__
 version should be fine. Link this library with your project, and #include `include/rtcore.h` in your main file.
 
-You can check out some examples in `./demo`. Just run `bash build.sh` to run it.
+You can check out some examples in `./demo`. Just run `/bin/bash build.sh` to run it.
 
 ## Features
 
 - Renders spheres (still and moving) and triangle meshes. Meshes can be loaded from OBJ files, as shown in `./demos/main.cpp`.
 - Lazy construction of acceleration structures such as Bounding Volume Hierarchies and AABBs. 
 - Different surface material types, such as Lambertian, Dielectric, Metallic, and Glossy. 
-- A Transform class for linear transformations of objects. 
+- A Transform class for easily applying linear transformations (translation, scale, rotation) to objects.
 
 
 ## TODOs
 
 - [ ] Implement Texture and Sampler classes.
-- [ ] Create Renderer class that accepts a scene, along with user parameters, and renders that scene. Currently, the task of  rendering a scene is left up to the user, though the `./demo` explains how to do it. Parameters should include the output texture dimensions, samples per pixel, maximum num of ray bounces, etc.
+- [ ] A class for light sources. Currently the only light source is a a blue-sky environment light, and it cannot be modified.
 - [ ] Ray-scattering should be iterative. Currently, it is implemented recursively, which is more intuitive but inefficient, since recursive functions require lots of allocation on the stack.
 - [ ] A lot of other stuff...
+- [x] Create Renderer class that accepts a scene, along with user parameters, and renders that scene. Currently, the task of  rendering a scene is left up to the user, though the `./demo` explains how to do it. Parameters should include the output texture dimensions, samples per pixel, maximum num of ray bounces, etc.
 
 ## References
 
