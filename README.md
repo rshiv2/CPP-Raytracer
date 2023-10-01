@@ -24,7 +24,7 @@ You can check out some examples in `./demo`. Just run `/bin/bash build.sh` to ru
 
 - [ ] Implement Texture and Sampler classes.
 - [ ] A class for light sources. Currently the only light source is a a blue-sky environment light, and it cannot be modified.
-- [ ] Ray-scattering should be iterative. Currently, it is implemented recursively, which is more intuitive but inefficient, since recursive functions require lots of allocation on the stack.
+- [ ] Ray-scattering should be iterative. Currently, it is implemented recursively, which is more intuitive but inefficient.
 - [ ] A lot of other stuff...
 - [x] Create Renderer class that accepts a scene, along with user parameters, and renders that scene. Currently, the task of  rendering a scene is left up to the user, though the `./demo` explains how to do it. Parameters should include the output texture dimensions, samples per pixel, maximum num of ray bounces, etc.
 
